@@ -4,7 +4,8 @@ export function onRequestGet({ env }) {
     supabaseAnonKey: env.SHW_SUPABASE_ANON_KEY || '',
   };
 
-  const payload = `window.__APP_CONFIG__ = Object.assign({}, window.__APP_CONFIG__, ${JSON.stringify(config)});`;
+  const payload = `window.__APP_CONFIG__ = Object.assign({}, window.__APP_CONFIG__, ${JSON.stringify(config)});
+window.dispatchEvent(new CustomEvent('app-config-ready'));`;
 
   return new Response(payload, {
     headers: {
