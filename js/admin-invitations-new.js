@@ -522,8 +522,59 @@ async function initialize() {
   }
 }
 
-if (window.__APP_CONFIG__?.supabaseUrl) {
-  initialize();
-} else {
-  window.addEventListener('app-config-ready', initialize, { once: true });
+const APP_CONFIG_WAIT_TIMEOUT_MS = 5000;
+const APP_CONFIG_POLL_INTERVAL_MS = 100;
+
+function hasSupabaseConfig() {
+  return Boolean(window.__APP_CONFIG__?.supabaseUrl && window.__APP_CONFIG__?.supabaseAnonKey);
 }
+
+function waitForAppConfig() {
+  if (hasSupabaseConfig()) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve, reject) => {
+    const startedAt = Date.now();
+    let settled = false;
+
+    const cleanup = () => {
+      settled = true;
+      window.removeEventListener('app-config-ready', onConfigReady);
+      clearInterval(pollTimer);
+    };
+
+    const resolveIfConfigReady = () => {
+      if (!hasSupabaseConfig() || settled) {
+        return;
+      }
+
+      cleanup();
+      resolve();
+    };
+
+    const onConfigReady = () => {
+      resolveIfConfigReady();
+    };
+
+    window.addEventListener('app-config-ready', onConfigReady);
+
+    const pollTimer = setInterval(() => {
+      resolveIfConfigReady();
+
+      if (Date.now() - startedAt >= APP_CONFIG_WAIT_TIMEOUT_MS && !settled) {
+        cleanup();
+        reject(new Error('Timed out waiting for app config to load.'));
+      }
+    }, APP_CONFIG_POLL_INTERVAL_MS);
+
+    resolveIfConfigReady();
+  });
+}
+
+waitForAppConfig()
+  .then(() => initialize())
+  .catch((error) => {
+    console.error(error);
+    alert(error.message || 'Initialization failed.');
+  });
