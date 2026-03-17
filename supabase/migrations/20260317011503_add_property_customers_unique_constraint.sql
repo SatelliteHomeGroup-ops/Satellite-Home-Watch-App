@@ -1,0 +1,3 @@
+alter table public.property_customers
+add constraint property_customers_property_id_customer_id_key
+unique (property_id, customer_id);
