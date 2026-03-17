@@ -61,55 +61,6 @@ function resolveSupabaseConfig() {
   };
 }
 
-function hasSupabaseConfig() {
-  const { url, anonKey } = resolveSupabaseConfig();
-  return Boolean(url && anonKey);
-}
-
-async function waitForSupabaseConfig({ timeoutMs = 10000, pollMs = 50 } = {}) {
-  if (hasSupabaseConfig()) return;
-
-  const started = Date.now();
-
-  await new Promise((resolve, reject) => {
-    const cleanup = () => {
-      window.removeEventListener('app-config-ready', handleConfigReady);
-      if (intervalId) clearInterval(intervalId);
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-
-    const finish = (callback) => {
-      cleanup();
-      callback();
-    };
-
-    const check = () => {
-      if (hasSupabaseConfig()) {
-        finish(resolve);
-      }
-    };
-
-    const handleConfigReady = () => {
-      check();
-    };
-
-    const intervalId = setInterval(check, pollMs);
-    const timeoutId = setTimeout(() => {
-      const waited = Date.now() - started;
-      finish(() => {
-        reject(
-          new Error(
-            `Missing Supabase configuration for this environment after waiting ${waited}ms.`,
-          ),
-        );
-      });
-    }, timeoutMs);
-
-    window.addEventListener('app-config-ready', handleConfigReady, { once: false });
-    check();
-  });
-}
-
 function createSupabaseClient() {
   const { url, anonKey } = resolveSupabaseConfig();
   if (!url || !anonKey) {
@@ -538,7 +489,6 @@ function wireEventHandlers() {
 
 async function initialize() {
   try {
-    await waitForSupabaseConfig();
     state.supabase = createSupabaseClient();
     const profile = await loadProfile();
     if (!profile) return;
@@ -572,4 +522,8 @@ async function initialize() {
   }
 }
 
-initialize();
+if (window.__APP_CONFIG__?.supabaseUrl) {
+  initialize();
+} else {
+  window.addEventListener('app-config-ready', initialize, { once: true });
+}
