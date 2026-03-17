@@ -40,6 +40,8 @@
           radial-gradient(circle at 92% 84%, rgba(235, 217, 182, 0.14), transparent 30%),
           linear-gradient(180deg, #f9f7f2, #f4f1ea 38%, #f8f5ef 100%);
         line-height: 1.62;
+        min-height: 100vh;
+        overflow-x: hidden;
       }
 
       h1, h2, h3, h4 {
@@ -53,6 +55,39 @@
       a { color: inherit; text-decoration: none; }
       .container { width: var(--container); margin: 0 auto; position: relative; z-index: 2; }
 
+      main {
+        position: relative;
+        isolation: isolate;
+      }
+
+      main::before,
+      main::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      main::before {
+        background:
+          radial-gradient(circle at 84% 11%, rgba(98, 145, 216, 0.22), transparent 36%),
+          radial-gradient(circle at 14% 32%, rgba(235, 216, 180, 0.2), transparent 40%),
+          radial-gradient(circle at 22% 78%, rgba(102, 150, 219, 0.12), transparent 34%);
+        background-size: 118% 118%;
+        animation: ambientShift 22s ease-in-out infinite alternate;
+        z-index: 0;
+      }
+
+      main::after {
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 42%, rgba(0, 0, 0, 0.35) 74%, transparent);
+        opacity: 0.3;
+        z-index: 0;
+      }
+
       .btn {
         display: inline-flex;
         align-items: center;
@@ -63,7 +98,7 @@
         border: 1px solid transparent;
         font-weight: 640;
         letter-spacing: 0.01em;
-        transition: transform 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
+        transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1), background 0.35s ease, border-color 0.35s ease;
       }
 
       .btn-primary {
@@ -75,10 +110,11 @@
       }
 
       .btn-primary:hover {
-        transform: translateY(-2px);
+        transform: translateY(-3px) scale(1.02);
         box-shadow:
           inset 0 1px 0 rgba(255, 255, 255, 0.65),
-          0 16px 34px rgba(226, 189, 124, 0.45);
+          0 16px 34px rgba(226, 189, 124, 0.45),
+          0 0 0 6px rgba(226, 189, 124, 0.18);
       }
 
       .btn-outline {
@@ -88,8 +124,9 @@
       }
 
       .btn-outline:hover {
-        background: rgba(255, 255, 255, 0.18);
-        transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.7);
+        transform: translateY(-2px) scale(1.015);
       }
 
       .btn:focus-visible { outline: 2px solid rgba(248, 236, 208, 0.9); outline-offset: 3px; }
@@ -145,11 +182,42 @@
         font-size: 0.95rem;
       }
 
+      .nav-links a {
+        position: relative;
+        transition: color 0.28s ease;
+      }
+
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -0.34rem;
+        height: 1.5px;
+        background: linear-gradient(90deg, rgba(31, 79, 134, 0), rgba(31, 79, 134, 0.7), rgba(31, 79, 134, 0));
+        transform: scaleX(0.3);
+        transform-origin: center;
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--ink-900);
+      }
+
+      .nav-links a:hover::after {
+        transform: scaleX(1);
+        opacity: 1;
+      }
+
       .hero {
+        --hero-shift-x: 0px;
+        --hero-shift-y: 0px;
         position: relative;
         overflow: hidden;
         color: var(--white);
-        padding: 6.5rem 0 6.4rem;
+        padding: 6.5rem 0 8.5rem;
+        z-index: 3;
         background:
           radial-gradient(circle at 86% 16%, rgba(120, 177, 251, 0.35), transparent 32%),
           radial-gradient(circle at 15% 15%, rgba(75, 127, 197, 0.46), transparent 37%),
@@ -171,6 +239,7 @@
         background-size: 64px 64px;
         mask-image: radial-gradient(circle at 42% 30%, black, transparent 84%);
         opacity: 0.5;
+        animation: gridDrift 28s linear infinite;
       }
 
       .hero::after {
@@ -181,7 +250,17 @@
         top: -240px;
         background: radial-gradient(circle, rgba(241, 221, 176, 0.33), transparent 66%);
         filter: blur(4px);
-        animation: drift 11s ease-in-out infinite alternate;
+        animation: drift 11s ease-in-out infinite alternate, glowPulse 9s ease-in-out infinite;
+      }
+
+      .hero-fade {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 180px;
+        background: linear-gradient(180deg, rgba(12, 32, 58, 0), rgba(12, 32, 58, 0.72) 45%, rgba(244, 241, 234, 0.92) 100%);
+        pointer-events: none;
       }
 
       .hero-grid {
@@ -221,6 +300,24 @@
         transform: perspective(1400px) rotateY(-7deg) rotateX(2deg);
       }
 
+      .hero-stack::before {
+        content: "";
+        position: absolute;
+        inset: 8% 12% 16% 0;
+        border-radius: 36px;
+        background: radial-gradient(circle at 40% 35%, rgba(126, 171, 239, 0.3), transparent 62%);
+        filter: blur(14px);
+        transform: translate3d(calc(var(--hero-shift-x) * -0.25), calc(var(--hero-shift-y) * -0.25), 0);
+        animation: glowDrift 13s ease-in-out infinite alternate;
+        pointer-events: none;
+      }
+
+      .hero-parallax {
+        transform: translate3d(calc(var(--hero-shift-x) * 0.8), calc(var(--hero-shift-y) * 0.8), 0);
+        transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+      }
+
       .hero-panel {
         position: absolute;
         right: 0;
@@ -228,10 +325,11 @@
         border-radius: var(--radius-xl);
         background: linear-gradient(165deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.06));
         border: 1px solid rgba(224, 238, 255, 0.28);
-        box-shadow: var(--shadow-deep);
+        box-shadow: 0 34px 70px rgba(4, 14, 29, 0.4), 0 8px 18px rgba(170, 201, 244, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.25);
         backdrop-filter: blur(12px);
         padding: 1.25rem;
         animation: floaty 8s ease-in-out infinite;
+        transform-origin: center;
       }
 
       .panel-top {
@@ -277,6 +375,7 @@
       .floating-note,
       .floating-summary,
       .floating-status {
+        animation: floatMini 10s ease-in-out infinite;
         position: absolute;
         border-radius: 14px;
         border: 1px solid rgba(224, 233, 245, 0.3);
@@ -285,6 +384,7 @@
       }
 
       .floating-note {
+        animation: floatMini 9s ease-in-out infinite;
         top: -16px;
         right: 14px;
         background: rgba(10, 27, 50, 0.78);
@@ -294,6 +394,7 @@
       }
 
       .floating-summary {
+        animation: floatMini 11s ease-in-out infinite reverse;
         left: -36px;
         bottom: -24px;
         background: rgba(255, 255, 255, 0.94);
@@ -303,6 +404,7 @@
       }
 
       .floating-status {
+        animation: floatMini 10s ease-in-out infinite;
         left: 6px;
         top: 38px;
         width: 160px;
@@ -317,35 +419,54 @@
 
       section {
         position: relative;
-        padding: 5.6rem 0;
+        padding: 6.1rem 0;
+        z-index: 2;
       }
 
       section + section::before {
         content: "";
         position: absolute;
-        top: -35px;
+        top: -54px;
         left: 0;
         right: 0;
-        height: 70px;
-        background: radial-gradient(55% 58px at 50% 100%, rgba(17, 44, 76, 0.12), transparent 72%);
+        height: 110px;
+        background: radial-gradient(58% 74px at 50% 100%, rgba(17, 44, 76, 0.14), transparent 75%);
         pointer-events: none;
       }
 
+      .section-blend {
+        margin-top: -3.7rem;
+      }
+
+      .section-blend .container {
+        background: linear-gradient(168deg, rgba(255, 255, 255, 0.89), rgba(249, 245, 238, 0.72));
+        border: 1px solid rgba(20, 40, 64, 0.08);
+        border-radius: 34px;
+        box-shadow: 0 30px 80px rgba(10, 26, 46, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -1px 0 rgba(15, 31, 51, 0.06);
+        padding: clamp(1.6rem, 3.5vw, 2.7rem);
+        backdrop-filter: blur(6px);
+      }
+
       .surface-soft {
-        background:
-          linear-gradient(180deg, #fcfaf6, #f6f2ea 65%, #f9f6ef),
-          radial-gradient(circle at 90% 18%, rgba(221, 201, 161, 0.16), transparent 34%);
+        background: linear-gradient(180deg, rgba(252, 250, 246, 0.5), rgba(246, 242, 234, 0.28));
       }
 
       .surface-deep {
-        background:
-          radial-gradient(circle at 12% 20%, rgba(94, 143, 212, 0.14), transparent 30%),
-          linear-gradient(180deg, #f4efe5, #f8f4ed 60%, #f2ede2);
+        background: linear-gradient(180deg, rgba(244, 239, 229, 0.56), rgba(248, 244, 237, 0.33));
       }
 
       .section-head {
         text-align: center;
         margin-bottom: 2.6rem;
+      }
+
+      .section-head-left {
+        text-align: left;
+        margin-bottom: 2rem;
+      }
+
+      .section-head-left p {
+        margin-inline: 0;
       }
 
       .section-head h2 { font-size: clamp(2.05rem, 4.4vw, 3.2rem); }
@@ -355,83 +476,196 @@
         max-width: 58ch;
       }
 
-      .card-grid {
+      .feature-layout {
         display: grid;
-        gap: 1.15rem;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 2rem;
+        align-items: stretch;
       }
 
-      .card {
+      .feature-visual {
+        position: relative;
+        border-radius: 30px;
+        padding: 1.2rem;
+        background: linear-gradient(160deg, rgba(11, 31, 57, 0.97), rgba(21, 58, 97, 0.92));
+        border: 1px solid rgba(205, 224, 249, 0.24);
+        box-shadow: 0 30px 70px rgba(6, 20, 40, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+        overflow: hidden;
+      }
+
+      .feature-visual::before {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 999px;
+        right: -60px;
+        top: -80px;
+        background: radial-gradient(circle, rgba(235, 216, 180, 0.32), transparent 66%);
+        animation: glowDrift 14s ease-in-out infinite alternate;
+      }
+
+      .visual-shell {
+        position: relative;
+        border-radius: 20px;
+        border: 1px solid rgba(214, 232, 255, 0.22);
+        background: linear-gradient(165deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+        backdrop-filter: blur(8px);
+        padding: 1rem;
+      }
+
+      .visual-shell + .visual-shell {
+        margin-top: 0.9rem;
+      }
+
+      .visual-shell-strong {
+        min-height: 190px;
+      }
+
+      .visual-metric {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #e4f0ff;
+        font-size: 0.9rem;
+      }
+
+      .visual-bars {
+        margin-top: 0.85rem;
+        display: grid;
+        gap: 0.6rem;
+      }
+
+      .visual-bars span {
+        display: block;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(230, 241, 255, 0.2);
+        overflow: hidden;
+      }
+
+      .visual-bars span::before {
+        content: "";
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(120deg, #f0ddb7, #dceafe);
+      }
+
+      .visual-bars span:nth-child(1)::before { width: 88%; }
+      .visual-bars span:nth-child(2)::before { width: 72%; }
+      .visual-bars span:nth-child(3)::before { width: 64%; }
+
+      .visual-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
+
+      .visual-mini {
+        border-radius: 14px;
+        padding: 0.7rem;
+        background: rgba(6, 20, 38, 0.56);
+        border: 1px solid rgba(208, 226, 248, 0.17);
+        color: #d7e9ff;
+        font-size: 0.83rem;
+      }
+
+      .feature-copy {
+        display: grid;
+        gap: 1rem;
+        align-content: start;
+        padding-top: 0.7rem;
+      }
+
+      .feature-stack {
+        display: grid;
+        gap: 0.85rem;
+      }
+
+      .feature-item {
+        --offset-y: 0px;
         position: relative;
         border-radius: var(--radius-md);
-        background: linear-gradient(170deg, #ffffff, #fcf9f3);
-        border: 1px solid rgba(26, 50, 77, 0.1);
+        background: linear-gradient(170deg, #ffffff, #fbf8f2);
+        border: 1px solid rgba(26, 50, 77, 0.12);
         box-shadow: var(--shadow-soft);
-        padding: 1.45rem;
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        padding: 1.05rem 1.15rem;
+        transform: translateY(var(--offset-y));
+        transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
       }
 
-      .card:nth-child(2),
-      .card:nth-child(5) { transform: translateY(20px); }
-
-      .card::before,
-      .step-card::before,
-      .quote::before {
-        content: "";
-        position: absolute;
-        left: 0.95rem;
-        right: 0.95rem;
-        top: 0;
-        height: 2px;
-        background: linear-gradient(90deg, rgba(233, 211, 167, 0), rgba(233, 211, 167, 0.9), rgba(233, 211, 167, 0));
+      .feature-item:nth-child(even) { --offset-y: 8px; }
+      .feature-item:hover {
+        transform: translateY(calc(var(--offset-y) - 6px)) scale(1.012);
+        box-shadow: 0 24px 48px rgba(9, 22, 40, 0.16), 0 9px 18px rgba(144, 178, 223, 0.13);
+        border-color: rgba(26, 50, 77, 0.2);
       }
 
-      .card::after {
-        content: "";
-        position: absolute;
-        width: 120px;
-        height: 120px;
-        right: -46px;
-        bottom: -56px;
-        border-radius: 999px;
-        background: radial-gradient(circle, rgba(161, 195, 240, 0.22), transparent 62%);
+      .feature-item h3 { font-size: 1.12rem; margin-bottom: 0.3rem; }
+      .feature-item p { color: var(--ink-700); }
+
+      .how-layout {
+        display: grid;
+        grid-template-columns: 0.72fr 1.28fr;
+        gap: 1.5rem;
+        align-items: start;
       }
 
-      .card:hover,
-      .step-card:hover,
-      .quote:hover,
-      .area-card:hover {
-        transform: translateY(-5px);
+      .how-intro {
+        position: sticky;
+        top: 104px;
       }
 
-      .card h3 { margin-bottom: 0.56rem; font-size: 1.3rem; }
-      .card p { color: var(--ink-700); }
-
-      .how-steps {
+      .process-flow {
         position: relative;
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 1rem;
+        padding-left: 2.3rem;
       }
 
-      .how-steps::before {
+      .process-flow::before {
         content: "";
         position: absolute;
-        left: 8%;
-        right: 8%;
-        top: 26px;
-        border-top: 1px dashed rgba(31, 79, 134, 0.36);
+        left: 0.8rem;
+        top: 0.5rem;
+        bottom: 0.5rem;
+        width: 1px;
+        background: linear-gradient(180deg, rgba(31, 79, 134, 0), rgba(31, 79, 134, 0.42), rgba(31, 79, 134, 0));
       }
 
       .step-card {
+        --offset-y: 0px;
         position: relative;
         background: linear-gradient(170deg, #ffffff, #fbf8f1);
         border: 1px solid rgba(8, 26, 50, 0.08);
         box-shadow: var(--shadow-soft);
         border-radius: var(--radius-md);
         padding: 1.25rem;
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        transform: translateY(var(--offset-y));
+        transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+      }
+
+      .step-card:nth-child(2),
+      .step-card:nth-child(4) { --offset-y: 14px; }
+
+      .step-card::after {
+        content: "";
+        position: absolute;
+        width: 11px;
+        height: 11px;
+        border-radius: 999px;
+        left: -1.93rem;
+        top: 1.28rem;
+        background: linear-gradient(180deg, #dceafd, #bed5f8);
+        box-shadow: 0 0 0 6px rgba(190, 213, 248, 0.2);
+      }
+
+      .step-card:hover,
+      .quote:hover {
+        transform: translateY(calc(var(--offset-y, 0px) - 7px)) scale(1.015);
+        box-shadow: 0 26px 54px rgba(9, 22, 40, 0.18), 0 10px 22px rgba(144, 178, 223, 0.16);
+        border-color: rgba(26, 50, 77, 0.18);
       }
 
       .step-num {
@@ -448,10 +682,62 @@
         margin-bottom: 0.72rem;
       }
 
+      .testimonial-layout {
+        display: grid;
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: 1rem;
+        align-items: start;
+      }
+
+      .quote {
+        --offset-y: 0px;
+        position: relative;
+        background: linear-gradient(170deg, #ffffff, #fbf9f4);
+        border-radius: var(--radius-md);
+        border: 1px solid rgba(11, 31, 61, 0.12);
+        box-shadow: var(--shadow-soft);
+        padding: 1.45rem;
+        transform: translateY(var(--offset-y));
+        transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.35s ease;
+      }
+
+      .quote-featured {
+        --offset-y: 12px;
+        min-height: 100%;
+        padding: 2rem;
+      }
+
+      .quote-featured p {
+        font-size: clamp(1.2rem, 2vw, 1.6rem);
+        line-height: 1.35;
+        color: #2a3e55;
+      }
+
+      .quote-column {
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .quote-column .quote:nth-child(2) {
+        --offset-y: 16px;
+      }
+
+      .quote p {
+        color: var(--ink-700);
+        font-size: 1.01rem;
+      }
+
+      .quote strong {
+        display: block;
+        margin-top: 1rem;
+        color: var(--ink-900);
+        font-size: 0.95rem;
+      }
+
       .about-wrap {
         display: grid;
-        grid-template-columns: 1.03fr 0.97fr;
-        gap: 1.25rem;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 0;
         align-items: stretch;
       }
 
@@ -499,40 +785,16 @@
         border: 1px solid rgba(26, 50, 77, 0.1);
         box-shadow: var(--shadow-soft);
         padding: 2.2rem;
+        margin: 2.6rem 0 2.6rem -4.8rem;
+        align-self: center;
       }
 
       .about-content h2 { margin: 0.95rem 0 0.95rem; }
 
-      .quote-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 1rem;
-      }
-
-      .quote {
-        position: relative;
-        background: linear-gradient(170deg, #ffffff, #fbf9f4);
-        border-radius: var(--radius-md);
-        border: 1px solid rgba(11, 31, 61, 0.12);
-        box-shadow: var(--shadow-soft);
-        padding: 1.45rem;
-      }
-
-      .quote p {
-        color: var(--ink-700);
-        font-size: 1.01rem;
-      }
-
-      .quote strong {
-        display: block;
-        margin-top: 1rem;
-        color: var(--ink-900);
-        font-size: 0.95rem;
-      }
-
       .service-areas {
         overflow: hidden;
         color: var(--white);
+        margin-top: -2.2rem;
         background:
           radial-gradient(circle at 10% 70%, rgba(232, 215, 181, 0.2), transparent 30%),
           radial-gradient(circle at 90% 10%, rgba(127, 175, 240, 0.24), transparent 32%),
@@ -548,6 +810,7 @@
       }
 
       .area-card {
+        --offset-y: 0px;
         position: relative;
         border-radius: 14px;
         padding: 1.15rem;
@@ -555,12 +818,18 @@
         border: 1px solid rgba(229, 237, 252, 0.24);
         text-align: center;
         font-weight: 620;
-        transition: transform 0.25s ease;
+        transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
       }
+      .area-card:hover {
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: 0 16px 34px rgba(4, 12, 25, 0.34);
+      }
+
 
       .final-cta {
         text-align: center;
         color: var(--white);
+        margin-top: -2rem;
         background:
           radial-gradient(circle at 78% 12%, rgba(255, 255, 255, 0.45), transparent 32%),
           radial-gradient(circle at 18% 86%, rgba(229, 211, 169, 0.24), transparent 34%),
@@ -603,14 +872,95 @@
         gap: 0.7rem;
       }
 
+      body.has-motion section:not(.hero) {
+        opacity: 0;
+        transform: translateY(26px);
+        transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      body.has-motion section.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .hero-panel,
+      .panel-card,
+      .section-blend .container,
+      .about-content,
+      .quote,
+      .step-card {
+        position: relative;
+      }
+
+      .hero-panel::before,
+      .panel-card::before,
+      .step-card::after,
+      .quote::after,
+      .about-content::before {
+        pointer-events: none;
+      }
+
+      .panel-card::before,
+      .about-content::before,
+      .quote::after {
+        content: "";
+        position: absolute;
+        inset: 1px;
+        border-radius: inherit;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.6), transparent 70%);
+      }
+
+      .quote::after {
+        border-color: rgba(171, 198, 234, 0.18);
+      }
+
+      @keyframes ambientShift {
+        from { transform: translate3d(0, 0, 0) scale(1); }
+        to { transform: translate3d(-1.8%, 1.6%, 0) scale(1.04); }
+      }
+
+      @keyframes gridDrift {
+        from { background-position: 0 0, 0 0; }
+        to { background-position: 24px 18px, -20px 14px; }
+      }
+
       @keyframes drift {
         from { transform: translate(0, 0); }
         to { transform: translate(-38px, 34px); }
       }
 
+      @keyframes glowPulse {
+        0%, 100% { opacity: 0.78; }
+        50% { opacity: 1; }
+      }
+
+      @keyframes glowDrift {
+        from { opacity: 0.7; }
+        to { opacity: 1; }
+      }
+
       @keyframes floaty {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-10px); }
+      }
+
+      @keyframes floatMini {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+
+        body.has-motion section:not(.hero) {
+          opacity: 1;
+          transform: none;
+        }
       }
 
       @media (max-width: 1024px) {
@@ -629,6 +979,10 @@
           width: 100%;
         }
 
+        .hero-parallax {
+          transform: none;
+        }
+
         .floating-note,
         .floating-summary,
         .floating-status {
@@ -637,12 +991,54 @@
           width: auto;
         }
 
-        .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .how-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .how-steps::before { display: none; }
-        .quote-grid { grid-template-columns: 1fr; }
+        .section-blend {
+          margin-top: -2.3rem;
+        }
+
+        .section-blend .container {
+          padding: 1.35rem;
+        }
+
+        .feature-layout,
+        .how-layout,
+        .testimonial-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .feature-item:nth-child(even),
+        .step-card:nth-child(2),
+        .step-card:nth-child(4),
+        .quote-featured,
+        .quote-column .quote:nth-child(2) {
+          --offset-y: 0px;
+        }
+
+        .how-intro {
+          position: static;
+        }
+
+        .process-flow {
+          padding-left: 1.5rem;
+        }
+
+        .process-flow::before {
+          left: 0.45rem;
+        }
+
+        .step-card::after {
+          left: -1.2rem;
+        }
         .area-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+        .about-wrap {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .about-content {
+          margin: -2.1rem 0 0;
+        }
       }
 
       @media (max-width: 760px) {
@@ -662,16 +1058,16 @@
 
         .hero {
           padding-top: 4.6rem;
-          padding-bottom: 4.7rem;
+          padding-bottom: 6.4rem;
         }
 
         .hero h1 { font-size: clamp(2.2rem, 10.5vw, 3.2rem); }
-        .card-grid,
-        .how-steps,
         .area-grid,
         .footer-grid { grid-template-columns: 1fr; }
-        .card:nth-child(2),
-        .card:nth-child(5) { transform: none; }
+
+        .section-blend {
+          margin-top: -1.4rem;
+        }
 
         section { padding: 4.45rem 0; }
       }
@@ -709,6 +1105,7 @@
             </div>
           </div>
           <div class="hero-stack">
+            <div class="hero-parallax">
             <aside class="hero-panel" aria-label="Service dashboard preview">
               <div class="floating-note">Last visit report sent · 2h ago</div>
               <div class="floating-status">Gate, HVAC, and humidity readings verified</div>
@@ -735,37 +1132,59 @@
                 <span>Structured checks active this week</span>
               </div>
             </aside>
+            </div>
+          </div>
+        </div>
+        <div class="hero-fade" aria-hidden="true"></div>
+      </section>
+
+      <section id="services" class="surface-soft section-blend">
+        <div class="container">
+          <div class="feature-layout">
+            <div class="feature-visual" aria-label="Product monitoring dashboard illustration">
+              <div class="visual-shell visual-shell-strong">
+                <div class="visual-metric"><strong>Live Property Overview</strong><span>17 Active Checks</span></div>
+                <div class="visual-bars"><span></span><span></span><span></span></div>
+              </div>
+              <div class="visual-shell">
+                <div class="visual-grid">
+                  <article class="visual-mini"><strong>Humidity</strong><br/>Stable in range</article>
+                  <article class="visual-mini"><strong>Entry Points</strong><br/>All secure</article>
+                  <article class="visual-mini"><strong>Vendor Queue</strong><br/>2 requests pending</article>
+                  <article class="visual-mini"><strong>Storm Readiness</strong><br/>Prepared</article>
+                </div>
+              </div>
+            </div>
+            <div class="feature-copy">
+              <div class="section-head section-head-left">
+                <h2>Everything you need to protect your property</h2>
+                <p>
+                  A refined service model designed for homeowners who value consistency,
+                  discretion, and dependable local stewardship.
+                </p>
+              </div>
+              <div class="feature-stack">
+                <article class="feature-item"><h3>Scheduled inspections</h3><p>Routine visual checks with structured standards for interior and exterior condition.</p></article>
+                <article class="feature-item"><h3>Real-time visit reports</h3><p>Clear post-visit summaries delivered with notes and timestamped observations.</p></article>
+                <article class="feature-item"><h3>Secure documentation</h3><p>Organized records that support service history, accountability, and peace of mind.</p></article>
+                <article class="feature-item"><h3>Service request coordination</h3><p>Trusted communication with approved vendors when maintenance needs arise.</p></article>
+                <article class="feature-item"><h3>Local trusted oversight</h3><p>Responsive nearby presence to help monitor concerns between visits.</p></article>
+                <article class="feature-item"><h3>Weather and event awareness</h3><p>Proactive checks around storms, seasonal shifts, and local advisory events.</p></article>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="services" class="surface-soft">
-        <div class="container">
-          <div class="section-head">
-            <h2>Everything you need to protect your property</h2>
-            <p>
-              A refined service model designed for homeowners who value consistency,
-              discretion, and dependable local stewardship.
-            </p>
+      <section class="surface-deep section-blend">
+        <div class="container how-layout">
+          <div class="how-intro">
+            <div class="section-head section-head-left">
+              <h2>How it works</h2>
+              <p>Simple and structured onboarding with premium service throughout every season.</p>
+            </div>
           </div>
-          <div class="card-grid">
-            <article class="card"><h3>Scheduled inspections</h3><p>Routine visual checks with structured standards for interior and exterior condition.</p></article>
-            <article class="card"><h3>Real-time visit reports</h3><p>Clear post-visit summaries delivered with notes and timestamped observations.</p></article>
-            <article class="card"><h3>Secure documentation</h3><p>Organized records that support service history, accountability, and peace of mind.</p></article>
-            <article class="card"><h3>Service request coordination</h3><p>Trusted communication with approved vendors when maintenance needs arise.</p></article>
-            <article class="card"><h3>Local trusted oversight</h3><p>Responsive nearby presence to help monitor concerns between visits.</p></article>
-            <article class="card"><h3>Weather and event awareness</h3><p>Proactive checks around storms, seasonal shifts, and local advisory events.</p></article>
-          </div>
-        </div>
-      </section>
-
-      <section class="surface-deep">
-        <div class="container">
-          <div class="section-head">
-            <h2>How it works</h2>
-            <p>Simple and structured onboarding with premium service throughout every season.</p>
-          </div>
-          <div class="how-steps">
+          <div class="process-flow">
             <article class="step-card"><span class="step-num">1</span><h3>Request setup</h3><p>Share your property details and preferred visit cadence.</p></article>
             <article class="step-card"><span class="step-num">2</span><h3>Property onboarding</h3><p>We document key systems, access instructions, and priorities.</p></article>
             <article class="step-card"><span class="step-num">3</span><h3>Ongoing check-ins</h3><p>Scheduled visits are completed with consistency and care.</p></article>
@@ -774,7 +1193,7 @@
         </div>
       </section>
 
-      <section id="about" class="surface-soft">
+      <section id="about" class="surface-soft section-blend">
         <div class="container about-wrap">
           <div class="about-image" role="img" aria-label="Founders placeholder image"></div>
           <article class="about-content">
@@ -790,20 +1209,22 @@
         </div>
       </section>
 
-      <section class="surface-deep">
+      <section class="surface-deep section-blend">
         <div class="container">
-          <div class="section-head">
+          <div class="section-head section-head-left">
             <h2>Trusted by homeowners who expect more</h2>
           </div>
-          <div class="quote-grid">
-            <article class="quote"><p>"The reports are clear, professional, and always on time. We finally feel fully informed while away."</p><strong>Homeowner in Naples</strong></article>
-            <article class="quote"><p>"Their team coordinated access and service follow-up flawlessly during storm season."</p><strong>Seasonal Resident, Bonita Springs</strong></article>
-            <article class="quote"><p>"We wanted discreet, reliable oversight—and that is exactly what we received."</p><strong>Property Owner, Marco Island</strong></article>
+          <div class="testimonial-layout">
+            <article class="quote quote-featured"><p>"The reports are clear, professional, and always on time. We finally feel fully informed while away."</p><strong>Homeowner in Naples</strong></article>
+            <div class="quote-column">
+              <article class="quote"><p>"Their team coordinated access and service follow-up flawlessly during storm season."</p><strong>Seasonal Resident, Bonita Springs</strong></article>
+              <article class="quote"><p>"We wanted discreet, reliable oversight—and that is exactly what we received."</p><strong>Property Owner, Marco Island</strong></article>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="areas" class="service-areas">
+      <section id="areas" class="service-areas section-blend">
         <div class="container">
           <div class="section-head">
             <h2>Serving Southwest Florida</h2>
@@ -819,7 +1240,7 @@
         </div>
       </section>
 
-      <section class="final-cta" id="contact">
+      <section class="final-cta section-blend" id="contact">
         <div class="container">
           <div class="section-head" style="margin-bottom: 1.2rem">
             <h2>Ready for confident care while you are away?</h2>
@@ -871,5 +1292,45 @@
         </div>
       </div>
     </footer>
+
+    <script>
+      (() => {
+        const body = document.body;
+        body.classList.add("has-motion");
+
+        const sections = document.querySelectorAll("main section:not(.hero)");
+        if ("IntersectionObserver" in window) {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible");
+                observer.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+
+          sections.forEach((section) => observer.observe(section));
+        } else {
+          sections.forEach((section) => section.classList.add("is-visible"));
+        }
+
+        const hero = document.querySelector(".hero");
+        if (!hero || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+        const updateShift = (event) => {
+          const rect = hero.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width - 0.5;
+          const y = (event.clientY - rect.top) / rect.height - 0.5;
+          hero.style.setProperty("--hero-shift-x", `${(x * 14).toFixed(2)}px`);
+          hero.style.setProperty("--hero-shift-y", `${(y * 10).toFixed(2)}px`);
+        };
+
+        hero.addEventListener("pointermove", updateShift);
+        hero.addEventListener("pointerleave", () => {
+          hero.style.setProperty("--hero-shift-x", "0px");
+          hero.style.setProperty("--hero-shift-y", "0px");
+        });
+      })();
+    </script>
   </body>
 </html>
