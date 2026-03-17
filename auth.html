@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal Login | Satellite Home Watch</title>
+    <meta
+      name="description"
+      content="Secure invitation-only sign-in for the Satellite Home Watch client portal."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --navy-950: #07162c;
+        --navy-900: #0d2344;
+        --navy-800: #163a67;
+        --navy-700: #255387;
+        --sky-100: #d2e0f6;
+        --paper-50: #fdfbf6;
+        --paper-100: #f6f1e8;
+        --paper-200: #ece4d5;
+        --ink-900: #152438;
+        --ink-700: #42556a;
+        --ink-500: #6f7f91;
+        --line: rgba(18, 35, 58, 0.16);
+        --line-dark: rgba(225, 236, 255, 0.24);
+        --gold-300: #e3cc9f;
+        --gold-400: #d9bc82;
+        --success: #1d7a51;
+        --error: #b6263f;
+        --radius-xl: 24px;
+        --radius-lg: 18px;
+        --radius-md: 12px;
+        --shadow-deep: 0 32px 60px rgba(4, 15, 32, 0.38);
+        --shadow-soft: 0 16px 34px rgba(19, 34, 53, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+        color: var(--ink-900);
+        background: var(--paper-50);
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: "Fraunces", "Cormorant Garamond", serif;
+        letter-spacing: 0.01em;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .auth-layout {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: minmax(360px, 1.1fr) minmax(380px, 0.9fr);
+      }
+
+      .panel-left {
+        position: relative;
+        padding: clamp(2rem, 4vw, 3.8rem);
+        background:
+          radial-gradient(circle at 80% 12%, rgba(89, 141, 206, 0.32), transparent 36%),
+          radial-gradient(circle at 18% 10%, rgba(73, 125, 194, 0.33), transparent 30%),
+          linear-gradient(140deg, var(--navy-950), var(--navy-900) 45%, var(--navy-800));
+        color: #f5f9ff;
+        overflow: hidden;
+      }
+
+      .brand-kicker {
+        font-size: 0.76rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #bad0f0;
+      }
+
+      .brand-title {
+        margin-top: 0.3rem;
+        font-size: clamp(1.5rem, 2.6vw, 2.15rem);
+      }
+
+      .brand-subtitle {
+        margin-top: 0.4rem;
+        color: #c8d9f3;
+      }
+
+      .hero-copy {
+        margin-top: clamp(2.2rem, 4vw, 4rem);
+        max-width: 58ch;
+      }
+
+      .hero-copy h2 {
+        font-size: clamp(2rem, 4.6vw, 3.1rem);
+        line-height: 1.12;
+      }
+
+      .hero-copy p {
+        margin-top: 1rem;
+        color: #d7e4f8;
+        font-size: 1.02rem;
+        line-height: 1.7;
+      }
+
+      .portal-preview {
+        margin-top: 2rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--line-dark);
+        background: rgba(10, 28, 54, 0.5);
+        box-shadow: var(--shadow-deep);
+        padding: 1.05rem;
+        backdrop-filter: blur(4px);
+      }
+
+      .preview-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .dot-row {
+        display: flex;
+        gap: 0.36rem;
+      }
+
+      .dot-row span {
+        width: 0.58rem;
+        height: 0.58rem;
+        border-radius: 999px;
+        background: rgba(232, 243, 255, 0.55);
+      }
+
+      .status-chip {
+        border-radius: 999px;
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #edfcf5;
+        background: rgba(36, 145, 98, 0.24);
+        border: 1px solid rgba(102, 210, 166, 0.45);
+      }
+
+      .preview-grid {
+        margin-top: 1rem;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.75rem;
+      }
+
+      .metric {
+        border-radius: 12px;
+        border: 1px solid rgba(189, 214, 244, 0.2);
+        background: rgba(6, 18, 36, 0.46);
+        padding: 0.7rem;
+      }
+
+      .metric small {
+        display: block;
+        color: #b3c8e8;
+        font-size: 0.74rem;
+      }
+
+      .metric strong {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 1rem;
+      }
+
+      .preview-list {
+        margin-top: 0.9rem;
+        border-radius: 12px;
+        border: 1px solid rgba(189, 214, 244, 0.2);
+        padding: 0.78rem;
+        background: rgba(6, 18, 36, 0.42);
+      }
+
+      .preview-list p {
+        color: #d6e5fa;
+        margin-bottom: 0.5rem;
+        font-size: 0.88rem;
+      }
+
+      .mini-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.8rem;
+        font-size: 0.82rem;
+        color: #bdd0ed;
+      }
+
+      .mini-row + .mini-row {
+        margin-top: 0.45rem;
+      }
+
+      .value-list {
+        margin: 1.55rem 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 0.72rem;
+      }
+
+      .value-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.62rem;
+        color: #e2ecfa;
+      }
+
+      .check {
+        margin-top: 0.15rem;
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        font-size: 0.75rem;
+        color: #e6f9f0;
+        background: rgba(29, 122, 81, 0.34);
+        border: 1px solid rgba(95, 189, 149, 0.56);
+      }
+
+      .panel-right {
+        background: linear-gradient(180deg, #fdfaf3, #f7f0e3 90%);
+        padding: clamp(1.8rem, 3.8vw, 3.2rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .auth-shell {
+        width: min(460px, 100%);
+      }
+
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.9rem;
+        color: var(--ink-700);
+      }
+
+      .back-link:hover {
+        color: var(--ink-900);
+      }
+
+      .invite-pill {
+        margin-top: 1.15rem;
+        display: inline-flex;
+        border-radius: 999px;
+        font-size: 0.74rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #4c6179;
+        border: 1px solid rgba(74, 97, 123, 0.2);
+        background: rgba(255, 255, 255, 0.58);
+        padding: 0.38rem 0.75rem;
+      }
+
+      .auth-shell h1 {
+        margin-top: 1rem;
+        font-size: clamp(1.9rem, 3.8vw, 2.5rem);
+        color: var(--ink-900);
+      }
+
+      .intro {
+        margin-top: 0.7rem;
+        color: var(--ink-700);
+        line-height: 1.7;
+      }
+
+      .auth-form {
+        margin-top: 1.55rem;
+      }
+
+      .field {
+        margin-bottom: 1rem;
+      }
+
+      .field label {
+        display: block;
+        margin-bottom: 0.42rem;
+        font-size: 0.87rem;
+        font-weight: 600;
+        color: #30445b;
+      }
+
+      .input-wrap {
+        position: relative;
+      }
+
+      input[type="email"],
+      input[type="password"],
+      input[type="text"] {
+        width: 100%;
+        border: 1px solid rgba(32, 51, 73, 0.24);
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: var(--radius-md);
+        padding: 0.8rem 0.85rem;
+        color: var(--ink-900);
+        font: inherit;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: #2f5d91;
+        box-shadow: 0 0 0 3px rgba(47, 93, 145, 0.18);
+      }
+
+      .toggle-password {
+        position: absolute;
+        right: 0.45rem;
+        top: 50%;
+        transform: translateY(-50%);
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: #51657e;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0.36rem 0.55rem;
+      }
+
+      .toggle-password:hover {
+        color: var(--ink-900);
+        background: rgba(21, 36, 56, 0.08);
+      }
+
+      .form-row {
+        margin: 0.2rem 0 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .remember {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        color: #30445b;
+        font-size: 0.9rem;
+      }
+
+      input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+        accent-color: #255387;
+      }
+
+      .link-btn {
+        border: 0;
+        background: transparent;
+        color: #2b4f79;
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.9rem;
+        font-weight: 600;
+        padding: 0;
+      }
+
+      .link-btn:hover {
+        color: #1f3d61;
+      }
+
+      .submit-btn {
+        width: 100%;
+        border: 1px solid #0f2d53;
+        border-radius: 999px;
+        background: linear-gradient(120deg, #0d2b52, #1d4a7c);
+        color: #f3f8ff;
+        padding: 0.88rem 1rem;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 12px 24px rgba(12, 37, 66, 0.32);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .submit-btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 18px 28px rgba(12, 37, 66, 0.42);
+      }
+
+      .submit-btn:disabled {
+        cursor: wait;
+        opacity: 0.72;
+      }
+
+      .inline-message {
+        min-height: 1.4rem;
+        margin-top: 0.72rem;
+        font-size: 0.89rem;
+      }
+
+      .inline-message.error {
+        color: var(--error);
+      }
+
+      .inline-message.success {
+        color: var(--success);
+      }
+
+      .info-card {
+        margin-top: 1.15rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.66);
+        box-shadow: var(--shadow-soft);
+        padding: 1rem 1.05rem;
+      }
+
+      .info-card h3 {
+        font-size: 1.1rem;
+      }
+
+      .info-card p {
+        margin-top: 0.48rem;
+        color: var(--ink-700);
+        line-height: 1.6;
+        font-size: 0.94rem;
+      }
+
+      @media (max-width: 1024px) {
+        .auth-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .panel-left {
+          min-height: auto;
+        }
+
+        .panel-right {
+          padding-top: 2.2rem;
+          padding-bottom: 2.8rem;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .preview-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-row {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="auth-layout">
+      <section class="panel-left" aria-label="Portal benefits and overview">
+        <p class="brand-kicker">Satellite Home Watch</p>
+        <h1 class="brand-title">Satellite Home Watch</h1>
+        <p class="brand-subtitle">Premium Property Care</p>
+
+        <div class="hero-copy">
+          <h2>Your property, always in view.</h2>
+          <p>
+            Stay informed with clear inspection visibility, visit history, service updates, and
+            direct communication—all from one secure portal designed for discerning homeowners.
+          </p>
+        </div>
+
+        <article class="portal-preview" aria-label="Portal dashboard preview">
+          <div class="preview-top">
+            <div class="dot-row" aria-hidden="true"><span></span><span></span><span></span></div>
+            <span class="status-chip">All Systems Normal</span>
+          </div>
+          <div class="preview-grid">
+            <div class="metric"><small>Open Tasks</small><strong>02 Active</strong></div>
+            <div class="metric"><small>Latest Visit</small><strong>Today · 9:20 AM</strong></div>
+            <div class="metric"><small>Issues Logged</small><strong>0 Critical</strong></div>
+          </div>
+          <div class="preview-list">
+            <p>Recent Property Activity</p>
+            <div class="mini-row"><span>Weekly inspection complete</span><span>Passed</span></div>
+            <div class="mini-row"><span>Pool chemistry verified</span><span>Updated</span></div>
+          </div>
+        </article>
+
+        <ul class="value-list">
+          <li><span class="check">✓</span>Real-time inspection tracking &amp; reports</li>
+          <li><span class="check">✓</span>Instant alerts for critical property issues</li>
+          <li><span class="check">✓</span>Secure document vault &amp; communication</li>
+        </ul>
+      </section>
+
+      <section class="panel-right" aria-label="Portal login form">
+        <div class="auth-shell">
+          <a href="/index.html" class="back-link" aria-label="Back to website">← Back to website</a>
+          <div class="invite-pill">Invitation-only portal access</div>
+          <h1>Welcome back</h1>
+          <p class="intro">
+            Sign in to access your Satellite Home Watch portal. Access is granted by invitation
+            only, so account registration is managed directly by our team.
+          </p>
+
+          <form id="loginForm" class="auth-form" novalidate>
+            <div class="field">
+              <label for="email">Email Address</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+            </div>
+
+            <div class="field">
+              <label for="password">Password</label>
+              <div class="input-wrap">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                />
+                <button
+                  id="togglePassword"
+                  class="toggle-password"
+                  type="button"
+                  aria-label="Show password"
+                >
+                  Show
+                </button>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="remember" for="rememberMe">
+                <input id="rememberMe" type="checkbox" name="rememberMe" />
+                Remember me for 30 days
+              </label>
+              <button id="forgotPassword" class="link-btn" type="button">Forgot password?</button>
+            </div>
+
+            <button id="submitButton" class="submit-btn" type="submit">Sign In to Portal</button>
+            <div id="inlineMessage" class="inline-message" role="status" aria-live="polite"></div>
+          </form>
+
+          <article class="info-card">
+            <h3>Invitation-only access</h3>
+            <p>
+              This portal does not support self-service account creation. If you need access,
+              please contact Satellite Home Watch and we will issue your secure invitation.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/app-config.js"></script>
+    <script>
+      (function () {
+        const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const submitButton = document.getElementById('submitButton');
+        const inlineMessage = document.getElementById('inlineMessage');
+        const forgotPasswordButton = document.getElementById('forgotPassword');
+        const togglePasswordButton = document.getElementById('togglePassword');
+
+        let supabaseClient = null;
+
+        function resolveSupabaseConfig() {
+          const appConfig = window.__APP_CONFIG__ || {};
+          return {
+            url:
+              window.SUPABASE_URL ||
+              window.__SUPABASE_URL__ ||
+              appConfig.supabaseUrl ||
+              appConfig.SHW_SUPABASE_URL ||
+              '',
+            anonKey:
+              window.SUPABASE_ANON_KEY ||
+              window.__SUPABASE_ANON_KEY__ ||
+              appConfig.supabaseAnonKey ||
+              appConfig.SHW_SUPABASE_ANON_KEY ||
+              '',
+          };
+        }
+
+        function hasConfig() {
+          const config = resolveSupabaseConfig();
+          return Boolean(config.url && config.anonKey);
+        }
+
+        function setMessage(type, message) {
+          inlineMessage.textContent = message;
+          inlineMessage.classList.remove('error', 'success');
+          if (type) inlineMessage.classList.add(type);
+        }
+
+        function setSubmittingState(isSubmitting) {
+          submitButton.disabled = isSubmitting;
+          submitButton.textContent = isSubmitting ? 'Signing In…' : 'Sign In to Portal';
+        }
+
+        async function redirectIfAuthenticated() {
+          const { data, error } = await supabaseClient.auth.getSession();
+          if (error) return;
+          if (data.session) {
+            window.location.replace('/index.html');
+          }
+        }
+
+        async function initializeAuth() {
+          if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+            setMessage('error', 'Login client unavailable. Please refresh and try again.');
+            return;
+          }
+
+          const { url, anonKey } = resolveSupabaseConfig();
+          if (!url || !anonKey) {
+            setMessage('error', 'Portal configuration is unavailable. Please try again shortly.');
+            return;
+          }
+
+          supabaseClient = window.supabase.createClient(url, anonKey);
+          await redirectIfAuthenticated();
+        }
+
+        async function waitForConfigAndInitialize() {
+          if (hasConfig()) {
+            await initializeAuth();
+            return;
+          }
+
+          const onConfigReady = async function () {
+            window.removeEventListener('app-config-ready', onConfigReady);
+            await initializeAuth();
+          };
+
+          window.addEventListener('app-config-ready', onConfigReady);
+        }
+
+        togglePasswordButton.addEventListener('click', function () {
+          const showing = passwordInput.type === 'text';
+          passwordInput.type = showing ? 'password' : 'text';
+          togglePasswordButton.textContent = showing ? 'Show' : 'Hide';
+          togglePasswordButton.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+        });
+
+        forgotPasswordButton.addEventListener('click', function () {
+          setMessage('success', 'Password reset flow will be added next.');
+        });
+
+        form.addEventListener('submit', async function (event) {
+          event.preventDefault();
+          setMessage('', '');
+
+          if (!supabaseClient) {
+            setMessage('error', 'Portal is still loading. Please wait a moment and try again.');
+            return;
+          }
+
+          const email = emailInput.value.trim();
+          const password = passwordInput.value;
+
+          if (!email || !password) {
+            setMessage('error', 'Please enter your email address and password.');
+            return;
+          }
+
+          setSubmittingState(true);
+
+          try {
+            const { error } = await supabaseClient.auth.signInWithPassword({
+              email,
+              password,
+            });
+
+            if (error) {
+              setMessage('error', error.message || 'Unable to sign in. Please check your credentials.');
+              return;
+            }
+
+            window.location.replace('/index.html');
+          } catch (err) {
+            setMessage('error', 'Unable to sign in right now. Please try again in a moment.');
+          } finally {
+            setSubmittingState(false);
+          }
+        });
+
+        waitForConfigAndInitialize();
+      })();
+    </script>
+  </body>
+</html>
