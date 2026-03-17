@@ -44,18 +44,19 @@ const elements = {
 };
 
 function resolveSupabaseConfig() {
+  const appConfig = window.APP_CONFIG || window.__APP_CONFIG__ || {};
   return {
     url:
       window.SUPABASE_URL ||
       window.__SUPABASE_URL__ ||
-      window.APP_CONFIG?.supabaseUrl ||
-      window.__APP_CONFIG__?.supabaseUrl ||
+      appConfig.supabaseUrl ||
+      appConfig.SHW_SUPABASE_URL ||
       '',
     anonKey:
       window.SUPABASE_ANON_KEY ||
       window.__SUPABASE_ANON_KEY__ ||
-      window.APP_CONFIG?.supabaseAnonKey ||
-      window.__APP_CONFIG__?.supabaseAnonKey ||
+      appConfig.supabaseAnonKey ||
+      appConfig.SHW_SUPABASE_ANON_KEY ||
       '',
   };
 }
